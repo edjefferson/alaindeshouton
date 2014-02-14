@@ -17,8 +17,6 @@ end
 def upcase_tweet(tweet)
   splittweet = tweet.split(' ')
   splittweet.map! do |word|
-    first_char = word[0,1]
-    last_char = word[/.\b/]
     puts word
     if word[0,4]!="http"
       word.upcase!
@@ -74,9 +72,9 @@ LatestTweet = AlainTweets.search("from:alaindebotton", :result_type => "recent",
   puts status.id
   tweettext = status.text
   puts upcase_tweet(tweettext)
-  #AlainTwoots.update(trim140(upcase_tweet(tweettext))  
   result.tweet_id = status.id
   result.save
+  AlainTwoots.update(upcase_tweet(tweettext))
 
 end
 
