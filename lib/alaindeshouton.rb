@@ -17,7 +17,6 @@ end
 def upcase_tweet(tweet)
   splittweet = tweet.split(' ')
   splittweet.map! do |word|
-    puts word
     if word[0,4]!="http"
       word.upcase!
     else
