@@ -24,20 +24,20 @@ con = Mysql.new ENV['DB_ADDRESS'],ENV['DB_USER'],ENV['DB_PASSWORD'],ENV['DB_NAME
 
 #heroku config:add E_CONSUMER_KEY= R_CONSUMER_SECRET= R_OATH_TOKEN= R_OATH_TOKEN_SECRET=
 
-AlainTweets = Twitter.configure do |config|
+AlainTweets = Twitter::REST::Client.new do |config|
   config.consumer_key = ENV['R_CONSUMER_KEY']
   config.consumer_secret = ENV['R_CONSUMER_SECRET']
-  config.oauth_token = ENV['R_OATH_TOKEN']
-  config.oauth_token_secret = ENV['R_OATH_TOKEN_SECRET']
+  config.access_token = ENV['R_OATH_TOKEN']
+  config.access_token_secret = ENV['R_OATH_TOKEN_SECRET']
 end
 
 #heroku config:add W_CONSUMER_KEY= W_CONSUMER_SECRET= W_OATH_TOKEN= W_OATH_TOKEN_SECRET=
 
-AlainTwoots = Twitter.configure do |config|
+AlainTwoots = Twitter::REST::Client.new do |config|
   config.consumer_key = ENV['W_CONSUMER_KEY']
   config.consumer_secret = ENV['W_CONSUMER_SECRET']
-  config.oauth_token = ENV['W_OATH_TOKEN']
-  config.oauth_token_secret = ENV['W_OATH_TOKEN_SECRET']
+  config.access_token  = ENV['W_OATH_TOKEN']
+  config.access_token_secret = ENV['W_OATH_TOKEN_SECRET']
 
 end
 
