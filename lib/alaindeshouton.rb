@@ -1,26 +1,35 @@
 require 'twitter'
-require 'mysql'
+require 'pg'
+require 'active_record'
 
-class String
-
-
-
-  def trim140
-    tweet = self
-    while tweet.length>140
-      tweetwords=tweet.split(' ')
-      tweet=tweetwords[0..-2].join(' ') << "..."
-   
+def trim140(tweet)
+  while tweet.length>137
+    tweetwords=tweet.split(' ')
+    if tweetwords.size > 1
+      tweet=tweetwords[0..-2].join(' ')
+    else
+      tweet=tweet[0..136]
     end
-    return tweet
   end
-  
+  tweet << "..."
 end
 
-#heroku config:add DB_HOST= DB_USER= DB_PW= DB_NAME=
+#heroku config:add DB_ADDRESS= DB_USER= DB_PW= DB_NAME=
 
 
-con = Mysql.new ENV['DB_ADDRESS'],ENV['DB_USER'],ENV['DB_PASSWORD'],ENV['DB_NAME']
+=begin
+ActiveRecord::Base.establish_connection(
+  :encoding => "utf8",
+  :collation => "utf8mb4_general_ci",
+  :adapter  => "postgresql",
+  :host     => ENV['DB_ADDRESS'],
+  :username => ENV['DB_USER'],
+  :password => ENV['DB_PASSWORD'],
+  :database => ENV['DB_NAME']
+)
+=end
+ActiveRecord::Base.establish_connection(ENV["DATABASE_URL"])
+
 
 #heroku config:add E_CONSUMER_KEY= R_CONSUMER_SECRET= R_OATH_TOKEN= R_OATH_TOKEN_SECRET=
 
