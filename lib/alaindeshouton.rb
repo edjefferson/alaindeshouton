@@ -58,7 +58,7 @@ LatestTweet = AlainTweets.search("from:alaindebotton", :result_type => "recent",
   puts status.id
   tweettext = status.text.upcase
   puts tweettext
-  #AlainTwoots.update(tweettext.trim140)  
+  AlainTwoots.update(trim140(tweettext))  
   result.tweet_id = status.id
   result.save
 
