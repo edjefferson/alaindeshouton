@@ -14,56 +14,53 @@ def trim140(tweet)
   tweet << "..."
 end
 
-#heroku config:add DB_ADDRESS= DB_USER= DB_PW= DB_NAME=
-
-
-=begin
-ActiveRecord::Base.establish_connection(
-  :encoding => "utf8",
-  :collation => "utf8mb4_general_ci",
-  :adapter  => "postgresql",
-  :host     => ENV['DB_ADDRESS'],
-  :username => ENV['DB_USER'],
-  :password => ENV['DB_PASSWORD'],
-  :database => ENV['DB_NAME']
-)
-=end
 ActiveRecord::Base.establish_connection(ENV["DATABASE_URL"])
 
+class Tweet < ActiveRecord::Base
+end
 
-#heroku config:add E_CONSUMER_KEY= R_CONSUMER_SECRET= R_OATH_TOKEN= R_OATH_TOKEN_SECRET=
+#heroku config:add R_CONSUMER_KEY= R_CONSUMER_SECRET= R_OAUTH_TOKEN= R_OAUTH_TOKEN_SECRET=
 
 AlainTweets = Twitter::REST::Client.new do |config|
   config.consumer_key = ENV['R_CONSUMER_KEY']
   config.consumer_secret = ENV['R_CONSUMER_SECRET']
-  config.access_token = ENV['R_OATH_TOKEN']
-  config.access_token_secret = ENV['R_OATH_TOKEN_SECRET']
+  config.access_token = ENV['R_OAUTH_TOKEN']
+  config.access_token_secret = ENV['R_OAUTH_TOKEN_SECRET']
 end
 
-#heroku config:add W_CONSUMER_KEY= W_CONSUMER_SECRET= W_OATH_TOKEN= W_OATH_TOKEN_SECRET=
+#heroku config:add W_CONSUMER_KEY= W_CONSUMER_SECRET= W_OAUTH_TOKEN= W_OAUTH_TOKEN_SECRET=
 
 AlainTwoots = Twitter::REST::Client.new do |config|
   config.consumer_key = ENV['W_CONSUMER_KEY']
   config.consumer_secret = ENV['W_CONSUMER_SECRET']
-  config.access_token  = ENV['W_OATH_TOKEN']
-  config.access_token_secret = ENV['W_OATH_TOKEN_SECRET']
+  config.access_token  = ENV['W_OAUTH_TOKEN']
+  config.access_token_secret = ENV['W_OAUTH_TOKEN_SECRET']
 
 end
 
-result = con.query("select lasttweet from lasttweet where id=1")
+result = Tweet.first_or_create(id: 1)
 
-x = result.fetch_row
+if ARGV[0]
+
+  result_id = 1
+
+else
+
+  result_id = result.tweet_id
+
+end
+
+puts result_id
 
 
-
-LatestTweet = AlainTweets.search("from:alaindebotton", :result_type => "recent",  :since_id => x[0].to_i 
-).results.reverse.each do |status|
+LatestTweet = AlainTweets.search("from:alaindebotton", :result_type => "recent",  :count => 10, :since_id => result_id 
+).to_a.reverse.each do |status|
   puts status.id
   tweettext = status.text.upcase
   puts tweettext
-  tweetid=status.id
-  AlainTwoots.update(tweettext.trim140)  
-  con.query("update lasttweet set lasttweet=#{tweetid} where id=1")
+  #AlainTwoots.update(tweettext.trim140)  
+  result.tweet_id = status.id
+  result.save
 
 end
 
