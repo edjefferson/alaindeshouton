@@ -53,8 +53,8 @@ end
 puts result_id
 
 
-LatestTweet = AlainTweets.search("from:alaindebotton", :result_type => "recent",  :count => 10, :since_id => result_id 
-).to_a.reverse.each do |status|
+LatestTweet = AlainTweets.search("from:alaindebotton", :result_type => "recent", :since_id => result_id 
+).take(20).to_a.reverse.each do |status|
   puts status.id
   tweettext = status.text.upcase
   puts tweettext
