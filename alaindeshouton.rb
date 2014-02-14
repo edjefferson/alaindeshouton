@@ -1,48 +1,19 @@
 require 'twitter'
-require 'engtagger'
 require 'mysql'
-require './twitterpatch.rb'
 
 class String
-def georgealyser
-  tgr = EngTagger.new
-  tagged = tgr.add_tags(self)
-  georgewords = ["Costanza", "George", "Vandelay Industries", "George Costanza", "Importer/Exporter", "Kramer","Jerry","Susan","Elaine"]
-  nouns = tgr.get_nouns(tagged)
-  
-  
-  nouns.delete_if {|key, value| key[0]==":"}
-  nouns.delete_if {|key, value| key[0]=="@"}
-  nouns.delete("http")
-  if nouns.size>0
-  b = nouns.keys.sample
-  nouns.delete(b)
-  c = nouns.keys.sample
-  self.gsub!("Alain","George")
-  self.gsub!("de Botton","Costanza")
-  self.gsub!("Religion for Atheists","Religion for Marine Biologists") 
-  self.gsub!("Atheists","marine biologists") 
-  self.gsub!("atheists","marine biologists") 
-  self.gsub!(b,georgewords.sample)
-  if c != nil
-    self.gsub!(c,georgewords.sample)
-  end
-  return self
-  
-else
-   return "no nouns"
-end
-end
 
-def trim140
-  tweet = self
-  while tweet.length>140
-    tweetwords=tweet.split(' ')
-    tweet=tweetwords[0..-2].join(' ') << "..."
- 
+
+
+  def trim140
+    tweet = self
+    while tweet.length>140
+      tweetwords=tweet.split(' ')
+      tweet=tweetwords[0..-2].join(' ') << "..."
+   
+    end
+    return tweet
   end
-  return tweet
-end
   
 end
 
@@ -76,18 +47,16 @@ x = result.fetch_row
 
 
 
-  LatestTweet = AlainTweets.search("from:alaindebotton", :result_type => "recent",  :since_id => x[0].to_i 
-  ).results.reverse.each do |status|
-    puts status.id
-    tweettext = status.text.georgealyser
-    puts tweettext
-    tweetid=status.id
-    if tweettext!="no nouns"
-       AlainTwoots.update(tweettext.trim140)  
-    end
-    con.query("update lasttweet set lasttweet=#{tweetid} where id=1")
-  
-  end
+LatestTweet = AlainTweets.search("from:alaindebotton", :result_type => "recent",  :since_id => x[0].to_i 
+).results.reverse.each do |status|
+  puts status.id
+  tweettext = status.text.upcase
+  puts tweettext
+  tweetid=status.id
+  AlainTwoots.update(tweettext.trim140)  
+  con.query("update lasttweet set lasttweet=#{tweetid} where id=1")
+
+end
 
   
 
