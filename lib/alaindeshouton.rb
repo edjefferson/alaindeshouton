@@ -14,6 +14,22 @@ def trim140(tweet)
   tweet << "..."
 end
 
+def upcase_tweet(tweet)
+  splittweet = tweet.split(' ')
+  splittweet.map! do |word|
+    first_char = word[0,1]
+    last_char = word[/.\b/]
+    puts word
+    if word[0,4]!="http"
+      word.upcase!
+    else
+      word
+    end
+  end
+  splittweet.join(" ")
+end 
+
+
 ActiveRecord::Base.establish_connection(ENV["DATABASE_URL"])
 
 class Tweet < ActiveRecord::Base
@@ -56,9 +72,9 @@ puts result_id
 LatestTweet = AlainTweets.search("from:alaindebotton", :result_type => "recent", :since_id => result_id 
 ).take(20).to_a.reverse.each do |status|
   puts status.id
-  tweettext = status.text.upcase
-  puts tweettext
-  AlainTwoots.update(trim140(tweettext))  
+  tweettext = status.text
+  puts upcase_tweet(tweettext)
+  #AlainTwoots.update(trim140(upcase_tweet(tweettext))  
   result.tweet_id = status.id
   result.save
 
